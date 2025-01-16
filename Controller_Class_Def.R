@@ -69,18 +69,14 @@ Controller <- setRefClass("Controller",
                             },
                             init_dirs = function(root){
                               #Initialize or reinitialize dirs and file reader
-                              files_dir= file.path(paste0(root,":/Files"))
-                              project_dir = file.path(files_dir,"Analyses/Model Specification")
-
                               dirs <<- list(
-                                utility = file.path(files_dir, "Utility"),
-                                dataIn = file.path(files_dir, "Input Data"),
-                                functions = file.path(project_dir,"functions"),
-                                instructions = file.path(project_dir,"Instructions"),
-                                results = file.path(project_dir, "Results")
+                                utility = file.path(root, "Utility"),
+                                dataIn = file.path(root, "Input Data"),
+                                functions = file.path(root,"functions"),
+                                instructions = file.path(root,"Instructions"),
+                                results = file.path(root, "Results")
                               )
 
-                              fr <<- dget(file.path(dirs$utility, "file_reader.R"))(dirs)
                             },
                             create_project_directories = function(){
                               #Create results folder if it doesn't exist
@@ -154,28 +150,6 @@ Controller <- setRefClass("Controller",
                             get_current_spec = function(param){
                               if(param ==  "param_combo_id"){
                                 return(current_spec[[param]])
-                              }else if(param == "iptw"){
-                                res <- inputs$iptw$useModels[[current_spec[[param]]]]
-                              }else if(param == "predictors"){
-                                dataset <- current_spec$match_cohort
-                                coxModel <- current_spec$cox
-                                res <- inputs$cox$predictors[[dataset]][[coxModel]]
-                                #res <- inputs$cox$predictors[[coxModel]]
-                              }else if(param == "iptwFormula"){
-                                dataset <- current_spec$match_cohort
-                                iptwModel <- inputs$iptw$useModels[[current_spec$iptw]]
-                                res <- inputs$iptw$models[[dataset]][[iptwModel]]
-                              }else if(param == "cox"){
-                                dataset <- current_spec$match_cohort
-                                res <- inputs$cox$useModels[[dataset]][[current_spec[[param]]]]
-
-                                #res <- inputs$cox$useModels[[dataset]]
-                              }else if (param %in% names(inputs$cox)){
-                                res <- inputs$cox[[param]][[current_spec[[param]]]]
-                              }else if (param == "bsIter"){
-                                res <- current_spec[[param]]
-                              }else{
-                                res <- inputs[[param]][[current_spec[[param]]]]
                               }
 
                               return(res)
@@ -277,42 +251,22 @@ Controller <- setRefClass("Controller",
                               template_row <- get_template_row(script_key)
                               template_row[1,] <- values
                               return(template_row)
-                            },
-                            load_helpers = function(scriptName){
-                              h <- dget(file.path(dirs$functions,scriptName))()
-                              h$creating_flowchart <- dget("h_flowchart.R")
-                              return(h)
-                            },
-                            validate_current_specs =   function(){
-                              outcomeAndCensOpts <- get_current_spec("outcome_and_censoring_vars")
-
-                              ## Check that there are no overlapping categories
-                              allDx  <- c(outcomeAndCensOpts$outcome,outcomeAndCensOpts$censor,outcomeAndCensOpts$mcimem)
-                              if(length(intersect(outcomeAndCensOpts$outcome,outcomeAndCensOpts$censor))|
-                                 length(intersect(outcomeAndCensOpts$outcome,outcomeAndCensOpts$mcimem))|
-                                 length(intersect(outcomeAndCensOpts$censor,outcomeAndCensOpts$mcimem))){
-                                stop("Invalid diagnosis categories in 'instructions$outcome_and_censoring_vars':
-                         Each diagnosis type should only be in one of 'outcome','censor' and 'mcimem'")
-                              }
-
-
-                              ## Check that all of the output locations are valid
-                              for(file_name in names(inputs$results_locations)){
-                                if(!(inputs$results_locations[[file_name]] %in% names(inputs$scripts))){
-                                  stop(paste0("Invalid results file location for '",file_name,
-                                              "' in 'inputs$results_locations', must correspond to a key in 'inputs$scripts"))
-                                }
-                              }
-                            },
-                            validate_all_specs = function(){
-                              cat("validating specs")
-                              initial_i <- i
-                              i <<- 0
-                              while(!is.na(next_spec())){
-                                validate_current_specs()
-                              }
-                              i <<- initial_i
-                              cat(" - passed\n")
-                            }
+                            }#,
+                            # load_helpers = function(scriptName){
+                            #   h <- dget(file.path(dirs$functions,scriptName))()
+                            #   return(h)
+                            # },
+                            # validate_current_specs =   function(){
+                            # },
+                            # validate_all_specs = function(){
+                            #   cat("validating specs")
+                            #   initial_i <- i
+                            #   i <<- 0
+                            #   while(!is.na(next_spec())){
+                            #     validate_current_specs()
+                            #   }
+                            #   i <<- initial_i
+                            #   cat(" - passed\n")
+                            # }
                           )
 )
