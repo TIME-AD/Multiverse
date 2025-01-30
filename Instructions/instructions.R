@@ -7,9 +7,8 @@ function(){
 
     #DESCRIBE WHAT THIS IS
     scripts = list(
-      "000" = list(
-        #Basic data cleaning
-        file_name = "000_data_cleaning.R",
+      "000"= list(
+        file_name = "000_Create_Model_Specifications.R",
         param_combs = c()
       ),
       "001" = list(
@@ -43,8 +42,7 @@ function(){
     results_locations = list(
       #Example
       #"d_first_dx_comorbidities.RDS" = "000b",
-
-      #000
+      "cleaned_brfss.RDS" = "000"
       #001
       #002
     ),

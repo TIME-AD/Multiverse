@@ -10,7 +10,9 @@ source("Controller_Class_Def.R")
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 project_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
 dirs <- list(
-  instructions =file.path(project_dir,"Instructions")
+  instructions =file.path(project_dir,"Instructions"),
+  data =file.path(project_dir,"Data"),
+  results =file.path(project_dir,"Results")
 )
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -49,11 +51,15 @@ df <- cross_join(elig_criteria,model_info) %>%
 
 #Save object in its initial state
 controller <- Controller$new(df,inputs,project_dir) #Calls Controller definition's "initialize" method
-controller$set_script("master")
+controller$set_script("000")
 #controller$validate_all_specs()
 
 # TO DO: Validate that all necessary packages are installed
 #controller$install_libraries()
+
+#Create a local copy of the brfss data in the project directory
+brfss_data <- readRDS(file.path("Data/cleaned_brfss.RDS"))
+controller$save_project_data(brfss_data, "cleaned_brfss.RDS")
 
 saveRDS(controller, file.path(controller$dirs$results,
                               controller$project_name,
