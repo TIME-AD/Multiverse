@@ -37,6 +37,37 @@ Controller <- setRefClass("Controller",
                               i <<- 1
                               current_spec <<- project_data_lookups[[current_script_key]][i,]
                             },
+                            install_libraries = function(){
+                              install.packages("tidyverse")
+                              install.packages("lubridate")
+                              install.packages("Rcpp")
+                              install.packages("clock")
+                              install.packages("gdata")
+                              install.packages("roxygen2")
+                              install.packages("metafor")
+                              install.packages("rlist")
+                              install.packages("glue")
+                              install.packages("Hmisc")
+                              install.packages("survival")
+                              install.packages("survminer")
+                              install.packages("broom")
+                              install.packages("rms")
+                              install.packages("table1")
+                              install.packages("missForest")
+                              install.packages("furrr")
+                              install.packages("h2o")
+                              install.packages("doParallel")
+                              install.packages("foreach")
+                              install.packages("parglm")
+                              install.packages("glmnet")
+                              install.packages("dplyr")
+                              install.packages("purrr")
+                              install.packages("personalized")
+                              install.packages("openxlsx")
+                              install.packages("parallel")
+                              install.packages("stringr")
+                              install.packages("haven")
+                            },
                             init_libraries = function(){
                               library(tidyverse)
                               library(lubridate)
@@ -51,14 +82,14 @@ Controller <- setRefClass("Controller",
                               library(survival)
                               library(survminer)
                               library(broom)
-                              library(rms)
+                              #library(rms)
                               library(table1)
                               library(missForest)
                               library(furrr)
                               library(h2o)
                               library(doParallel)
                               library(foreach)
-                              library(parglm)
+                              #library(parglm)
                               library(glmnet)
                               library(dplyr)
                               library(purrr)
@@ -66,6 +97,7 @@ Controller <- setRefClass("Controller",
                               library(openxlsx)
                               library(parallel)
                               library(stringr)
+                              library(haven)
                             },
                             init_dirs = function(root){
                               #Initialize or reinitialize dirs and file reader

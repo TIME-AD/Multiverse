@@ -52,6 +52,10 @@ controller <- Controller$new(df,inputs,project_dir) #Calls Controller definition
 controller$set_script("master")
 #controller$validate_all_specs()
 
+# TO DO: Validate that all necessary packages are installed
+#controller$install_libraries()
+
 saveRDS(controller, file.path(controller$dirs$results,
                               controller$project_name,
                               "controller.RDS"))
+
