@@ -10,9 +10,9 @@ source("Controller_Class_Def.R")
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 project_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
 dirs <- list(
-  instructions =file.path(project_dir,"Instructions"),
-  data =file.path(project_dir,"Data"),
-  results =file.path(project_dir,"Results")
+  instructions = file.path(project_dir,"Instructions"),
+  data = file.path(project_dir,"Data"),
+  results = file.path(project_dir,"Results")
 )
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -24,9 +24,9 @@ inputs <- dget(file.path(dirs$instructions,"instructions.R"))()
 # Create the list of analysis options for the project ----
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 elig_criteria <- expand.grid(
-  age_minimum_cutoffs = inputs$elig_criteria$age_minimum_cutoffs,
-  cvd_history = inputs$elig_criteria$cvd_history,
-  drug_use = inputs$elig_criteria$drug_use
+  age_minimum_cutoffs = names(inputs$age_minimum_cutoffs),
+  cvd_history = names(inputs$cvd_history),
+  gender = names(inputs$gender)
 )
 
 model_info <- expand.grid(
@@ -36,7 +36,6 @@ model_info <- expand.grid(
 
 covariate_sets <- expand.grid(
   AGE = inputs$covariate_sets$AGE,
-  SEX = inputs$covariate_sets$SEX,
   RACE = inputs$covariate_sets$RACE,
   EXERCISE = inputs$covariate_sets$EXERCISE
 )

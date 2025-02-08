@@ -182,8 +182,9 @@ Controller <- setRefClass("Controller",
                             get_current_spec = function(param){
                               if(param ==  "param_combo_id"){
                                 return(current_spec[[param]])
+                              }else{
+                                res <- inputs[[param]][[current_spec[[param]]]]
                               }
-
                               return(res)
                             },
                             save_project_data = function(data,

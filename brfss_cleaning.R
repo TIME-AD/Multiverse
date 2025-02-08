@@ -161,7 +161,14 @@ cohort$high_bp <- factor(cohort$high_bp,
                                levels = c(1,2,3,4),
                                labels = c("Yes", "During Pregnancy", "No", "Pre-hypertensive"))
 
-cohort <- cohort %>% mutate(
+cohort <- cohort %>%
+  #For CVD: assume don't know/refused is a 0
+replace_na(list(
+  stroke = 0,
+  heartattack=0,
+  coronaryheartd=0
+)) %>%
+  mutate(
   alcohol_niaaa = case_when(
     !drink_indicator ~ "none",
     drink_indicator & !heavydrink & !bingedrink ~ "light-to-moderate",
@@ -170,7 +177,8 @@ cohort <- cohort %>% mutate(
   hypertension = case_when(
     high_bp == "Yes" ~ 1,
     TRUE ~ 0
-  )
+  ),
+  cvd_history = stroke == 1 | heartattack == 1 | coronaryheartd == 1
 )
 
 saveRDS(cohort, file.path("Data/cleaned_brfss.RDS"))

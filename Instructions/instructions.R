@@ -17,7 +17,7 @@ function(){
         param_combs = c(
           "age_minimum_cutoffs",
           "cvd_history",
-          "drug_use")
+          "gender")
       ),
       "002" = list(
         #Run models with different exposure definitions, covariate sets, model forms and survey weighting choices
@@ -25,11 +25,10 @@ function(){
         param_combs = c(
           "age_minimum_cutoffs",
           "cvd_history",
-          "drug_use",
+          "gender",
           "survey_weighting",
           "model_forms",
           "AGE",
-          "SEX",
           "RACE",
           "EXERCISE",
           "bsIter"
@@ -42,26 +41,28 @@ function(){
     results_locations = list(
       #Example
       #"d_first_dx_comorbidities.RDS" = "000b",
-      "cleaned_brfss.RDS" = "000"
+      "cleaned_brfss.RDS" = "000",
+
       #001
+      "sample.RDS" = "001"
+
       #002
     ),
 
     #DESCRIBE WHAT THIS IS
-    elig_criteria = list(
-      age_minimum_cutoffs = list(
-        "50_plus" = 50,
-        "60_plus" = 60,
-        "70_plus" = 70
-      ),
-      cvd_history = list(
-        "y"=TRUE,
-        "n"=FALSE
-      ),
-      drug_use = list(
-        "y"=TRUE,
-        "n"=FALSE
-      )
+    age_minimum_cutoffs = list(
+      "50_plus" = 50,
+      "60_plus" = 60,
+      "70_plus" = 70
+    ),
+    cvd_history = list(
+      "y"=TRUE,
+      "n"=FALSE
+    ),
+    gender = list(
+      "all"="all",
+      "women"="women",
+      "men"="men"
     ),
     #DESCRIBE THIS
     #0/1 refers to whether the covariate is included
