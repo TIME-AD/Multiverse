@@ -30,14 +30,15 @@ elig_criteria <- expand.grid(
 )
 
 model_info <- expand.grid(
-  survey_weighting = inputs$survey_weighting,
-  model_forms = inputs$model_forms
+  survey_weighting = names(inputs$survey_weighting),
+  model_forms = names(inputs$model_forms)
 )
 
 covariate_sets <- expand.grid(
-  AGE = inputs$covariate_sets$AGE,
-  RACE = inputs$covariate_sets$RACE,
-  EXERCISE = inputs$covariate_sets$EXERCISE
+  AGE = names(inputs$AGE),
+  SEX = names(inputs$SEX),
+  RACE = names(inputs$RACE),
+  EXERCISE = names(inputs$EXERCISE)
 )
 
 bootstrap_ids <- expand.grid(
@@ -47,6 +48,11 @@ df <- cross_join(elig_criteria,model_info) %>%
   cross_join(covariate_sets) %>%
   cross_join(bootstrap_ids) %>%
   arrange()
+
+#Drop sex adjustment in sex-stratified analyses
+df <- df %>%
+  filter(gender == "all" | (gender == "women" & SEX == "n") | (gender == "men" & SEX == "n"))
+table(df$gender,df$SEX)
 
 #Save object in its initial state
 controller <- Controller$new(df,inputs,project_dir) #Calls Controller definition's "initialize" method

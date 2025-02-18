@@ -30,10 +30,13 @@ function(){
           "model_forms",
           "AGE",
           "RACE",
+          "SEX",
           "EXERCISE",
           "bsIter"
         )
-      )
+      ),
+      "003" = list(),
+      "004" = list()
     ),
 
     #DESCRIBE WHAT THIS IS
@@ -44,9 +47,25 @@ function(){
       "cleaned_brfss.RDS" = "000",
 
       #001
-      "sample.RDS" = "001"
+      "sample.RDS" = "001",
 
       #002
+      "estimates.RDS" = "002",
+      #cis.RDS = "002",
+
+      #003
+      "estimates_compiled.RDS" = "003",
+
+      #004
+      "heatmap.png" = "004",      #Heatmap points and SEs
+      "spec_plot.png" = "004",     #Paired specification plots
+
+
+      #Volcano plots (log se on y axis against estimate on x axis)
+
+      #Tables
+      # Show how to make a table 1 for each of the datasets output by 001
+
     ),
 
     #DESCRIBE WHAT THIS IS
@@ -61,18 +80,30 @@ function(){
     ),
     gender = list(
       "all"="all",
-      "women"="women",
+      "women"="women",W
       "men"="men"
     ),
     #DESCRIBE THIS
     #0/1 refers to whether the covariate is included
-    covariate_sets = list(
-      AGE = c(0,1),
-      SEX = c(0,1),
-      RACE = c(0,1),
-      EXERCISE = c(0,1)
+    AGE = list(
+      "n"=0,
+      "y"=1
     ),
-    model_forms = c("linear","interaction","nonlinear"),
+    SEX = list(
+      "n"=0,
+      "y"=1
+    ),
+    RACE = list(
+      "n"=0,
+      "y"=1
+    ),
+    EXERCISE = list(
+      "n"=0,
+      "y"=1
+    ),
+    model_forms = list("linear" = "linear",
+                       "interaction" = "interaction",
+                       "nonlinear" = "nonlinear"),
     survey_weighting = list(
       "y"=TRUE,
       "n"=FALSE
