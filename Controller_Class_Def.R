@@ -284,22 +284,6 @@ Controller <- setRefClass("Controller",
                               template_row <- get_template_row(script_key)
                               template_row[1,] <- values
                               return(template_row)
-                            }#,
-                            # load_helpers = function(scriptName){
-                            #   h <- dget(file.path(dirs$functions,scriptName))()
-                            #   return(h)
-                            # },
-                            # validate_current_specs =   function(){
-                            # },
-                            # validate_all_specs = function(){
-                            #   cat("validating specs")
-                            #   initial_i <- i
-                            #   i <<- 0
-                            #   while(!is.na(next_spec())){
-                            #     validate_current_specs()
-                            #   }
-                            #   i <<- initial_i
-                            #   cat(" - passed\n")
-                            # }
+                            
                           )
 )
