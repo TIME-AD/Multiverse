@@ -41,7 +41,7 @@ while(end_main_loop == FALSE){
   #Handle bootstrapping
   if(!is.na(options$bsIter)){
     set.seed(options$bsIter)
-    data <- sample_n(data, n=nrow(data), replace=TRUE)
+    data <- sample_n(data, size=nrow(data), replace=TRUE)
   }
 
   #Create formula
@@ -74,6 +74,8 @@ while(end_main_loop == FALSE){
   }else{
     weights <- rep(1,nrow(data))
   }
+
+  ## TO DO: NEED TO SET ALCOHOL REFERENCE TO LIGHT-TO-MOD
 
   #Run model
   model <- glm(formula=as.formula(formula),

@@ -54,11 +54,16 @@ function(){
       #cis.RDS = "002",
 
       #003
-      "estimates_compiled.RDS" = "003",
+      "estimates_compiled.RDS" = "003",       #Full sample and bootstrap estimates in long format
+      "estimates_effects.RDS" = "003",        #Just full sample estimates
+      "estimates_compiled_bsAgg.RDS" = "003", #Bootstrap estimates after aggregation
 
       #004
       "heatmap.png" = "004",      #Heatmap points and SEs
-      "spec_plot.png" = "004",     #Paired specification plots
+      "spec_plot_AGE.png" = "004",    #Paired specification plots
+      "spec_plot_RACE.png" = "004",    #Paired specification plots
+      "spec_plot_.png" = "004",    #Paired specification plots
+      "spec_plot_AGE.png" = "004"    #Paired specification plots
 
 
       #Volcano plots (log se on y axis against estimate on x axis)
@@ -80,7 +85,7 @@ function(){
     ),
     gender = list(
       "all"="all",
-      "women"="women",W
+      "women"="women",
       "men"="men"
     ),
     #DESCRIBE THIS
@@ -109,7 +114,7 @@ function(){
       "n"=FALSE
     ),
 
-    bsIter=1:2
+    bsIter=c(NA,1:2)
   )
 
   return(res)
