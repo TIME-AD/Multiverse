@@ -1,4 +1,4 @@
-function(){
+function(){#Wrapper for instructions
 
   res <- list(
     project = list(

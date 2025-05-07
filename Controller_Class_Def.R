@@ -108,7 +108,6 @@ Controller <- setRefClass("Controller",
                                 instructions = file.path(root,"Instructions"),
                                 results = file.path(root, "Results")
                               )
-
                             },
                             create_project_directories = function(){
                               #Create results folder if it doesn't exist
@@ -283,7 +282,6 @@ Controller <- setRefClass("Controller",
                             create_template_row = function(script_key,values){
                               template_row <- get_template_row(script_key)
                               template_row[1,] <- values
-                              return(template_row)
-                            
+                              return(template_row)}
                           )
 )
