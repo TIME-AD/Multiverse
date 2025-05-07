@@ -31,18 +31,10 @@ while(end_main_loop == FALSE){
     AGE = controller$get_current_spec("AGE"),
     SEX = controller$get_current_spec("SEX"),
     RACE = controller$get_current_spec("RACE"),
-    EXERCISE = controller$get_current_spec("EXERCISE"),
-    bsIter = controller$get_current_spec("bsIter")
+    EXERCISE = controller$get_current_spec("EXERCISE")
   )
 
-  #DESCRIBE HOW THIS WORKS:
   data <- controller$load_project_data("sample.RDS")
-
-  #Handle bootstrapping
-  if(!is.na(options$bsIter)){
-    set.seed(options$bsIter)
-    data <- sample_n(data, size=nrow(data), replace=TRUE)
-  }
 
   #Create formula
   covs <- c("marital_status","income","insurance","generalhealth") #could add BMI
@@ -75,23 +67,14 @@ while(end_main_loop == FALSE){
     weights <- rep(1,nrow(data))
   }
 
-  ## TO DO: NEED TO SET ALCOHOL REFERENCE TO LIGHT-TO-MOD
-
   #Run model
   model <- glm(formula=as.formula(formula),
                data=data,
                family=binomial())
 
   #Save results
-  ## Discuss whether to do in one file or multiple
-  ## Multiple: better for parallel and more robust if errors occur
-  ## Single: Runs faster, get one output data set that doesn't need post-processing before plotting
   estimates <- summary(model)$coef
   controller$save_project_data(estimates,"estimates.RDS")
-
-  #Walk through adding another output:
-  # CIs <- confint(model)
-  # controller$save_project_data(estimates,"cis.RDS")
 
   if(is.na(controller$next_spec())){
     end_main_loop <- TRUE

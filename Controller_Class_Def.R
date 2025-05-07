@@ -212,6 +212,8 @@ Controller <- setRefClass("Controller",
                                 write.csv(data,outPath,row.names = opts$row.names)
                               }else if(suffix == "R"){
                                 dput(data,outPath)
+                              }else if(suffix == "png"){
+                                ggsave(outPath,plot=data, height = 8, width = 8, units = "in")
                               }else{
                                 stop(paste0(fileName," file type not handled"))
                               }

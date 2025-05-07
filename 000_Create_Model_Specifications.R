@@ -41,12 +41,8 @@ covariate_sets <- expand.grid(
   EXERCISE = names(inputs$EXERCISE)
 )
 
-bootstrap_ids <- expand.grid(
-  bsIter = inputs$bsIter)
-
 df <- cross_join(elig_criteria,model_info) %>%
   cross_join(covariate_sets) %>%
-  cross_join(bootstrap_ids) %>%
   arrange()
 
 #Drop sex adjustment in sex-stratified analyses
@@ -57,10 +53,6 @@ table(df$gender,df$SEX)
 #Save object in its initial state
 controller <- Controller$new(df,inputs,project_dir) #Calls Controller definition's "initialize" method
 controller$set_script("000")
-#controller$validate_all_specs()
-
-# TO DO: Validate that all necessary packages are installed
-#controller$install_libraries()
 
 #Create a local copy of the brfss data in the project directory
 brfss_data <- readRDS(file.path("Data/cleaned_brfss.RDS"))

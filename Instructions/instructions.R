@@ -5,8 +5,8 @@ function(){#Wrapper for instructions
       name = "Multiverse Workshop"
     ),
 
-    #DESCRIBE WHAT THIS IS
     scripts = list(
+      #Set up all of the different model specifications
       "000"= list(
         file_name = "000_Create_Model_Specifications.R",
         param_combs = c()
@@ -31,19 +31,16 @@ function(){#Wrapper for instructions
           "AGE",
           "RACE",
           "SEX",
-          "EXERCISE",
-          "bsIter"
+          "EXERCISE"
         )
       ),
       "003" = list(),
       "004" = list()
     ),
 
-    #DESCRIBE WHAT THIS IS
     #Which subfolder should each result type be saved to
     results_locations = list(
-      #Example
-      #"d_first_dx_comorbidities.RDS" = "000b",
+      #000
       "cleaned_brfss.RDS" = "000",
 
       #001
@@ -51,29 +48,16 @@ function(){#Wrapper for instructions
 
       #002
       "estimates.RDS" = "002",
-      #cis.RDS = "002",
 
       #003
-      "estimates_compiled.RDS" = "003",       #Full sample and bootstrap estimates in long format
-      "estimates_effects.RDS" = "003",        #Just full sample estimates
-      "estimates_compiled_bsAgg.RDS" = "003", #Bootstrap estimates after aggregation
+      "estimates_compiled.RDS" = "003",
 
       #004
-      "heatmap.png" = "004",      #Heatmap points and SEs
-      "spec_plot_AGE.png" = "004",    #Paired specification plots
-      "spec_plot_RACE.png" = "004",    #Paired specification plots
-      "spec_plot_.png" = "004",    #Paired specification plots
-      "spec_plot_AGE.png" = "004"    #Paired specification plots
-
-
-      #Volcano plots (log se on y axis against estimate on x axis)
-
-      #Tables
-      # Show how to make a table 1 for each of the datasets output by 001
+      "spec_plot_EXERCISE.png" = "004",    #Paired specification plot
+      "heatmap.png" = "004"                #Heatmap points and SEs
 
     ),
 
-    #DESCRIBE WHAT THIS IS
     age_minimum_cutoffs = list(
       "50_plus" = 50,
       "60_plus" = 60,
@@ -88,7 +72,8 @@ function(){#Wrapper for instructions
       "women"="women",
       "men"="men"
     ),
-    #DESCRIBE THIS
+
+    #Covariates
     #0/1 refers to whether the covariate is included
     AGE = list(
       "n"=0,
@@ -112,9 +97,7 @@ function(){#Wrapper for instructions
     survey_weighting = list(
       "y"=TRUE,
       "n"=FALSE
-    ),
-
-    bsIter=c(NA,1:2)
+    )
   )
 
   return(res)
