@@ -3,8 +3,6 @@ library(glue)
 library(tidyverse)
 library(dplyr)
 
-# Define controller class
-source("Controller_Class_Def.R")
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Directories ----
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -50,15 +48,45 @@ df <- df %>%
   filter(gender == "all" | (gender == "women" & SEX == "n") | (gender == "men" & SEX == "n"))
 table(df$gender,df$SEX)
 
-#Save object in its initial state
-controller <- Controller$new(df,inputs,project_dir) #Calls Controller definition's "initialize" method
-controller$set_script("000")
-
 #Create a local copy of the brfss data in the project directory
 brfss_data <- readRDS(file.path("Data/cleaned_brfss.RDS"))
-controller$save_project_data(brfss_data, "cleaned_brfss.RDS")
 
-saveRDS(controller, file.path(controller$dirs$results,
-                              controller$project_name,
-                              "controller.RDS"))
+#Save all of this info as a single object
+directions <- list(
+  instructions = inputs,
+  specifications = df,
+  project = project_dir,
+  data = brfss_data,
+  dirs = list(
+    utility = file.path(project_dir, "Utility"),
+    dataIn = file.path(project_dir, "Input Data"),
+    functions = file.path(project_dir,"functions"),
+    instructions = file.path(project_dir,"Instructions"),
+    results = file.path(project_dir, "Results")
+  )
+)
 
+directions_path <- paste0(project_dir,"directions.RDS")
+
+#Set up directory structure
+##Create results folder if it doesn't exist
+if (!dir.exists(dirs$results)) {
+  dir.create(dirs$results)
+}
+
+#Create project subfolder
+if(!dir.exists(file.path(dirs$results,inputs$project$name))){
+  dir.create(file.path(dirs$results,inputs$project$name))
+}else{
+  cat(paste0("Warning: A project named '",inputs$project$name,"' already exists, results may be overwritten.\n"))
+}
+
+#Create subfolders to hold results from each script
+if(length(unique(names(inputs$scripts))) != length(names(inputs$scripts))){
+  stop("Error: duplicate script keys exist in instructions file")
+}
+for(script_name in names(inputs$scripts)){
+  dir.create(file.path(dirs$results,inputs$project$name,script_name),showWarnings = FALSE)
+}
+
+saveRDS(directions,directions_path)
