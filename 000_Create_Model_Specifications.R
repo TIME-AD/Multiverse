@@ -1,3 +1,6 @@
+# Purpose: Create directions for multiverse analysis from instructions document (~/Github/TIME-AD/Multiverse/Instructions/). 
+# This identifies the unique combination of all decisions and the final list of models that need to be run. 
+# Each following script calls the output of this script. 
 rm(list=ls())
 library(glue)
 library(tidyverse)
@@ -6,6 +9,7 @@ library(dplyr)
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Directories ----
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Set up environment 
 project_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
 dirs <- list(
   instructions = file.path(project_dir,"Instructions"),
@@ -14,24 +18,27 @@ dirs <- list(
 )
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Read in input files ----
+# Read in input files (instructions document)----
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 inputs <- dget(file.path(dirs$instructions,"instructions.R"))()
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Create the list of analysis options for the project ----
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Identify unique combinations of eligibility criteria decisions
 elig_criteria <- expand.grid(
   age_minimum_cutoffs = names(inputs$age_minimum_cutoffs),
   cvd_history = names(inputs$cvd_history),
   gender = names(inputs$gender)
 )
 
+# Identify unique combinations of model form decisions
 model_info <- expand.grid(
   survey_weighting = names(inputs$survey_weighting),
   model_forms = names(inputs$model_forms)
 )
 
+# Identify unique combinations of covariate sets
 covariate_sets <- expand.grid(
   AGE = names(inputs$AGE),
   SEX = names(inputs$SEX),
@@ -39,10 +46,12 @@ covariate_sets <- expand.grid(
   EXERCISE = names(inputs$EXERCISE)
 )
 
+# Combine all unique decisions for final list of all unique models 
 df <- cross_join(elig_criteria,model_info) %>%
   cross_join(covariate_sets) %>%
   arrange()
 
+# Models may have decisions that are mutually exclusive. Here, you can't stratify by sex AND adjust for sex. 
 #Drop sex adjustment in sex-stratified analyses
 df <- df %>%
   filter(gender == "all" | (gender == "women" & SEX == "n") | (gender == "men" & SEX == "n"))
