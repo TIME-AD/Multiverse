@@ -1,3 +1,7 @@
+#Purpose: This script creates different datasets based off 3 eligibility criteria
+#from the instructions document (1: age cutoffs, 2: sex stratification, 3: stratification 
+#by CVD history). Each unique data file is saved to be used in next script. 
+
 rm(list=ls())
 library(reshape)
 library(glue)
@@ -37,10 +41,12 @@ while(end_main_loop == FALSE){
   )
 
   analytic_data <- brfss_data %>%
+  # Filter cleaned dataset to include individuals above age cutoff
     filter(age_imputed >= options$age_minimum_cutoffs,
+           # Additionally restrict based off CVD history
            cvd_history == as.numeric(options$cvd_history))
 
-  #Optionally filter by gender unless options$gender == "all"
+  #Optionally filter by gender unless options$gender == "all" using if/else statement
   if(options$gender == "women"){
     analytic_data <- brfss_data %>%
       filter(age_imputed >= options$age_minimum_cutoffs,
@@ -50,7 +56,7 @@ while(end_main_loop == FALSE){
       filter(age_imputed >= options$age_minimum_cutoffs,
              cvd_history == as.numeric(options$cvd_history))
   }
-
+# Save data
   controller$save_project_data(analytic_data,"sample.RDS")
 
   if(is.na(controller$next_spec())){
