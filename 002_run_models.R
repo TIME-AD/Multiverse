@@ -1,3 +1,6 @@
+# Purpose: This script runs logistic regression models using unique covariate sets & functional forms from each 
+# dataset created in "001_create_eligible_sample.R." 
+
 rm(list=ls())
 library(reshape)
 library(glue)
@@ -19,6 +22,7 @@ controller$init_libraries()
 
 end_main_loop <- FALSE
 while(end_main_loop == FALSE){
+  # Pull out specifications for current model 
   options <- list(
     #001 parameters
     age_minimum_cutoffs = controller$get_current_spec("age_minimum_cutoffs"),
@@ -34,10 +38,13 @@ while(end_main_loop == FALSE){
     EXERCISE = controller$get_current_spec("EXERCISE")
   )
 
+  # Load data 
   data <- controller$load_project_data("sample.RDS")
 
-  #Create formula
-  covs <- c("marital_status","income","insurance","generalhealth") #could add BMI
+  #Create formula from covariates. First, covariates we always adjust for: marital status, income, insurance, & general health 
+  covs <- c("marital_status","income","insurance","generalhealth") 
+  
+  # Add each of these variables, if specified 
   if(options$AGE==1){
     covs <- c(covs,"age_imputed")
   }
@@ -53,26 +60,27 @@ while(end_main_loop == FALSE){
   formula <- "hypertension ~ alcohol_niaaa"
   formula <- paste0(formula," + ",paste0(covs,collapse=" + "))
 
-  #Handle model form
+  #Handle model form: add interaction, if specified 
   if(options$model_forms == "interaction"){
     formula <- paste0(formula," + age_imputed*alcohol_niaaa")
+     #Handle model form: add non-linear age, if specified 
   }else if(options$model_forms == "nonlinear"){
     formula <- paste0(formula," + age_imputed^2")
   }
 
-  #Make weights vector (or all 1)
+  #Make weights vector (or all 1 if no weighting indicated)
   if(options$survey_weighting==TRUE){
     weights <- data$surveyweights
   }else{
     weights <- rep(1,nrow(data))
   }
 
-  #Run model
+  #Run logistic regression model from formula & data specified 
   model <- glm(formula=as.formula(formula),
                data=data,
                family=binomial())
 
-  #Save results
+  #Save results from this model: only coefficients for space
   estimates <- summary(model)$coef
   controller$save_project_data(estimates,"estimates.RDS")
 
