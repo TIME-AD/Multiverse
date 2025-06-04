@@ -9,30 +9,32 @@ library(rlist)
 # Change depending on your operating system
 project_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
 
-# Define controller class
-source("Controller_Class_Def.R")
-
-# Load controller
+# Load directions output by previous script (001)
 project_name <- "Multiverse Workshop"
-controller <- readRDS(file.path("Results",project_name,"controller.RDS"))
-controller$init_libraries()
+directions_path_in <- file.path(project_dir,"Results",project_name,"001","directions.RDS")
+directions <- readRDS(directions_path_in)
 
-#Load outputs
+#Load estimates (output from script 002)
 estimates <- list()
-controller$set_script("002")
 end_main_loop <- FALSE
-while(end_main_loop == FALSE){
-  estimates[[length(estimates)+1]] <- controller$load_project_data("estimates.RDS") %>%
-    cbind(controller$get_current_row())
+for(spec_row_index in 1:nrow(directions$specifications)){
+  spec <- directions$specifications[spec_row_index,]
+  estimates_filename <- paste0("estimates_",spec_row_index,".RDS")
+  estimates[[length(estimates)+1]] <- readRDS(file.path(directions$dirs$results,
+                                                        directions$instructions$project$name,
+                                                        "002",
+                                                        estimates_filename)) %>%
+    cbind(spec)
 
+  #Move row names (coefficient names from the model summary) to a new column, and remove the row names
   estimates[[length(estimates)]]$coef <- rownames(estimates[[length(estimates)]])
-
   rownames(estimates[[length(estimates)]]) <- NULL
-  if(is.na(controller$next_spec())){
-    end_main_loop <- TRUE
-  }
+  estimates[[length(estimates)]]$spec_row_index <- spec_row_index
 }
 estimates <- list.rbind(estimates)
 
-controller$set_script("003")
-controller$save_project_data(estimates,"estimates_compiled.RDS")
+saveRDS(estimates,
+        file.path(directions$dirs$results,
+                  directions$instructions$project$name,
+                  "003",
+                  "estimates_compiled.RDS"))

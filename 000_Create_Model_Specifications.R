@@ -6,11 +6,11 @@ library(dplyr)
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Directories ----
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-project_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
+root_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
 dirs <- list(
-  instructions = file.path(project_dir,"Instructions"),
-  data = file.path(project_dir,"Data"),
-  results = file.path(project_dir,"Results")
+  instructions = file.path(root_dir,"Instructions"),
+  data = file.path(root_dir,"Data"),
+  results = file.path(root_dir,"Results")
 )
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -55,18 +55,9 @@ brfss_data <- readRDS(file.path("Data/cleaned_brfss.RDS"))
 directions <- list(
   instructions = inputs,
   specifications = df,
-  project = project_dir,
   data = brfss_data,
-  dirs = list(
-    utility = file.path(project_dir, "Utility"),
-    dataIn = file.path(project_dir, "Input Data"),
-    functions = file.path(project_dir,"functions"),
-    instructions = file.path(project_dir,"Instructions"),
-    results = file.path(project_dir, "Results")
-  )
+  dirs = dirs
 )
-
-directions_path <- paste0(project_dir,"directions.RDS")
 
 #Set up directory structure
 ##Create results folder if it doesn't exist
@@ -89,4 +80,6 @@ for(script_name in names(inputs$scripts)){
   dir.create(file.path(dirs$results,inputs$project$name,script_name),showWarnings = FALSE)
 }
 
+#Save directions
+directions_path <- file.path(dirs$results,inputs$project$name,"000","directions.RDS")
 saveRDS(directions,directions_path)

@@ -8,60 +8,57 @@ library(lubridate)
 # Change depending on your operating system
 project_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
 
-# Define controller class
-source("Controller_Class_Def.R")
-
-# Load controller
+# Load directions output by previous script (001)
 project_name <- "Multiverse Workshop"
-controller <- readRDS(file.path("Results",project_name,"controller.RDS"))
-controller$set_script("002")
-controller$init_libraries()
+directions_path_in <- file.path(project_dir,"Results",project_name,"001","directions.RDS")
+directions <- readRDS(directions_path_in)
 
-end_main_loop <- FALSE
-while(end_main_loop == FALSE){
-  options <- list(
-    #001 parameters
-    age_minimum_cutoffs = controller$get_current_spec("age_minimum_cutoffs"),
-    cvd_history = controller$get_current_spec("cvd_history"),
-    gender = controller$get_current_spec("gender"),
+#Helper function
+get_param <- dget("h_get_param.R")(directions)
 
-    #002 parameters
-    survey_weighting = controller$get_current_spec("survey_weighting"),
-    model_forms = controller$get_current_spec("model_forms"),
-    AGE = controller$get_current_spec("AGE"),
-    SEX = controller$get_current_spec("SEX"),
-    RACE = controller$get_current_spec("RACE"),
-    EXERCISE = controller$get_current_spec("EXERCISE")
-  )
+#Now we can loop over every row of directions$specifications for the analysis step
+last_elig_sample_index <- 0
+for(spec_row_index in 1:nrow(directions$specifications)){
+  spec <- directions$specifications[spec_row_index,]
 
-  data <- controller$load_project_data("sample.RDS")
+  #Loading is a slow operation, we can try to avoid excessive loading with this:
+  if (last_elig_sample_index != spec$elig_sample_index){
+    data_filename <- paste0("sample_", spec$elig_sample_index, ".RDS")
+    print(paste0("Loading ",data_filename))
+
+    data <- readRDS(file.path(directions$dirs$results,
+                              directions$instructions$project$name,
+                              "001",
+                              data_filename))
+  }
 
   #Create formula
-  covs <- c("marital_status","income","insurance","generalhealth") #could add BMI
-  if(options$AGE==1){
+  ## First, create a vector of the covariates we want in our formula
+  covs <- c("marital_status","income","insurance","generalhealth")
+  if(get_param(spec,"AGE")==1){
     covs <- c(covs,"age_imputed")
   }
-  if(options$RACE==1){
+  if(get_param(spec,"RACE")==1){
     covs <- c(covs,"race")
   }
-  if(options$SEX==1){
+  if(get_param(spec,"SEX")==1){
     covs <- c(covs,"female")
   }
-  if(options$EXERCISE==1){
+  if(get_param(spec,"EXERCISE")==1){
     covs <- c(covs,"exercise")
   }
   formula <- "hypertension ~ alcohol_niaaa"
   formula <- paste0(formula," + ",paste0(covs,collapse=" + "))
 
   #Handle model form
-  if(options$model_forms == "interaction"){
+  if(get_param(spec,"model_forms") == "interaction"){
     formula <- paste0(formula," + age_imputed*alcohol_niaaa")
-  }else if(options$model_forms == "nonlinear"){
+  }else if(get_param(spec,"model_forms") == "nonlinear"){
     formula <- paste0(formula," + age_imputed^2")
   }
 
   #Make weights vector (or all 1)
-  if(options$survey_weighting==TRUE){
+  if(get_param(spec,"survey_weighting")==TRUE){
     weights <- data$surveyweights
   }else{
     weights <- rep(1,nrow(data))
@@ -74,9 +71,14 @@ while(end_main_loop == FALSE){
 
   #Save results
   estimates <- summary(model)$coef
-  controller$save_project_data(estimates,"estimates.RDS")
+  estimates_filename <- paste0("estimates_",spec_row_index,".RDS")
+  print(paste0("Saving ",estimates_filename))
+  saveRDS(estimates,
+          file.path(directions$dirs$results,
+                    directions$instructions$project$name,
+                    "002",
+                    estimates_filename))
 
-  if(is.na(controller$next_spec())){
-    end_main_loop <- TRUE
-  }
+  #Update last eligible sample index
+  last_elig_sample_index <- spec$elig_sample_index
 }
