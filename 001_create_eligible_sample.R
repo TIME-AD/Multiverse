@@ -1,3 +1,7 @@
+#Purpose: This script creates different datasets based off 3 eligibility criteria
+#from the instructions document (1: age cutoffs, 2: sex stratification, 3: stratification 
+#by CVD history). Each unique data file is saved to be used in next script. 
+
 rm(list=ls())
 library(reshape)
 library(glue)
@@ -48,9 +52,10 @@ get_param <- dget("h_get_param.R")(directions)
 for(spec_row_index in 1:nrow(unique_elig_sample_specs)){
   spec <- unique_elig_sample_specs[spec_row_index,]
 
-  #Apply desired filters for age and CVD
+  # Filter cleaned dataset to include individuals above age cutoff
   analytic_data <- directions$data %>%
     filter(age_imputed >= get_param(spec,"age_minimum_cutoffs"),
+           # Additionally restrict based off CVD history
            cvd_history == get_param(spec,"cvd_history"))
 
   #Optionally filter further by gender (note: not run if options$gender == "all")
@@ -64,7 +69,7 @@ for(spec_row_index in 1:nrow(unique_elig_sample_specs)){
     )
   }
 
-  #Save using the index
+  #Save data, using the index to keep track of the data sets
   data_filename <- paste0("sample_",spec$elig_sample_index,".RDS")
   print(paste0("Saving ",data_filename))
   saveRDS(analytic_data,

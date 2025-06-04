@@ -1,3 +1,6 @@
+# Purpose: This script runs logistic regression models using unique covariate sets & functional forms from each 
+# dataset created in "001_create_eligible_sample.R." 
+
 rm(list=ls())
 library(reshape)
 library(glue)
@@ -33,8 +36,10 @@ for(spec_row_index in 1:nrow(directions$specifications)){
   }
 
   #Create formula
-  ## First, create a vector of the covariates we want in our formula
+  #Create formula from covariates. First, covariates we always adjust for: marital status, income, insurance, & general health 
   covs <- c("marital_status","income","insurance","generalhealth")
+
+    # Add each of these variables, if specified 
   if(get_param(spec,"AGE")==1){
     covs <- c(covs,"age_imputed")
   }
@@ -50,26 +55,28 @@ for(spec_row_index in 1:nrow(directions$specifications)){
   formula <- "hypertension ~ alcohol_niaaa"
   formula <- paste0(formula," + ",paste0(covs,collapse=" + "))
 
-  #Handle model form
+  #Handle model form: add interaction, if specified 
   if(get_param(spec,"model_forms") == "interaction"){
     formula <- paste0(formula," + age_imputed*alcohol_niaaa")
-  }else if(get_param(spec,"model_forms") == "nonlinear"){
+  }
+  #Handle model form: add non-linear age, if specified 
+  else if(get_param(spec,"model_forms") == "nonlinear"){
     formula <- paste0(formula," + age_imputed^2")
   }
 
-  #Make weights vector (or all 1)
+  #Make weights vector (or all 1 if no weighting indicated)
   if(get_param(spec,"survey_weighting")==TRUE){
     weights <- data$surveyweights
   }else{
     weights <- rep(1,nrow(data))
   }
 
-  #Run model
+  #Run logistic regression model from formula & data specified 
   model <- glm(formula=as.formula(formula),
                data=data,
                family=binomial())
 
-  #Save results
+  #Save results from this model: only coefficients for space
   estimates <- summary(model)$coef
   estimates_filename <- paste0("estimates_",spec_row_index,".RDS")
   print(paste0("Saving ",estimates_filename))

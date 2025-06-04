@@ -1,3 +1,5 @@
+# Purpose: This script compiled coefficients from all models into one place for ease of use. 
+
 rm(list=ls())
 library(reshape)
 library(glue)
@@ -6,7 +8,7 @@ library(dplyr)
 library(lubridate)
 library(rlist)
 
-# Change depending on your operating system
+# Set up directory (change depending on your operating system)
 project_dir = setwd("~/Dropbox/Github/TIME-AD/Multiverse")
 
 # Load directions output by previous script (001)
@@ -15,8 +17,9 @@ directions_path_in <- file.path(project_dir,"Results",project_name,"001","direct
 directions <- readRDS(directions_path_in)
 
 #Load estimates (output from script 002)
+# Create empty list to store estimates
 estimates <- list()
-end_main_loop <- FALSE
+
 for(spec_row_index in 1:nrow(directions$specifications)){
   spec <- directions$specifications[spec_row_index,]
   estimates_filename <- paste0("estimates_",spec_row_index,".RDS")
@@ -31,6 +34,7 @@ for(spec_row_index in 1:nrow(directions$specifications)){
   rownames(estimates[[length(estimates)]]) <- NULL
   estimates[[length(estimates)]]$spec_row_index <- spec_row_index
 }
+# Bind list elements by row and save
 estimates <- list.rbind(estimates)
 
 saveRDS(estimates,
